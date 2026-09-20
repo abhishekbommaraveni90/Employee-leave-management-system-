@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Admin Dashboard - Employee Leave Management</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- Header -->
+    <header>
+        <h1>Admin Dashboard</h1>
+        <p>Employee Leave Management System</p>
+    </header>
+
+    <div class="container">
+
+        <!-- Dashboard Cards -->
+        <section class="dashboard">
+
+            <div class="card">
+                <h3>Total Employees</h3>
+                <p id="totalEmployees">0</p>
+            </div>
+
+            <div class="card">
+                <h3>Pending Requests</h3>
+                <p id="pendingRequests">0</p>
+            </div>
+
+            <div class="card">
+                <h3>Approved Leaves</h3>
+                <p id="approvedLeaves">0</p>
+            </div>
+
+            <div class="card">
+                <h3>Rejected Leaves</h3>
+                <p id="rejectedLeaves">0</p>
+            </div>
+
+        </section>
+
+
+        <!-- Admin Controls -->
+        <section class="form-section">
+
+            <h2>Admin Controls</h2>
+
+            <div class="form-group">
+
+                <label for="searchEmployee">
+                    Search Employee
+                </label>
+
+                <input
+                    type="text"
+                    id="searchEmployee"
+                    placeholder="Enter employee name or ID"
+                    onkeyup="searchEmployee()"
+                >
+
+            </div>
+
+            <div class="form-group">
+
+                <label for="statusFilter">
+                    Filter
