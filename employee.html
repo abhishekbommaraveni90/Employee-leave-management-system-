@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Employee Leave Management System</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- Header -->
+
+    <header>
+
+        <h1>Employee Leave Management System</h1>
+
+        <p>Employee Dashboard</p>
+
+    </header>
+
+
+    <div class="container">
+
+        <!-- Employee Details -->
+
+        <section class="form-section">
+
+            <h2>Employee Details</h2>
+
+            <div class="form-group">
+
+                <label for="employeeName">
+                    Employee Name
+                </label>
+
+                <input
+                    type="text"
+                    id="employeeName"
+                    placeholder="Enter employee name"
+                    required
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="employeeId">
+                    Employee ID
+                </label>
+
+                <input
+                    type="text"
+                    id="employeeId"
+                    placeholder="Enter employee ID"
+                    required
+                >
+
+            </div>
+
+        </section>
+
+
+        <!-- Apply Leave -->
+
+        <section class="form-section">
+
+            <h2>Apply for Leave</h2>
+
+            <form id="leaveForm">
+
+                <div class="form-group">
+
+                    <label for="leaveType">
+                        Leave Type
+                    </label>
+
+                    <select id="leaveType" required>
+
+                        <option value="">
+                            Select Leave Type
+                        </option>
+
+                        <option value="Casual Leave">
+                            Casual Leave
+                        </option>
+
+                        <option value="Sick Leave">
+                            Sick Leave
+                        </option>
+
+                        <option value="Earned Leave">
+                            Earned Leave
+                        </option>
+
+                        <option value="Emergency Leave">
+                            Emergency Leave
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="date-row">
+
+                    <div class="form-group">
+
+                        <label for="fromDate">
+                            From Date
+                        </label>
+
+                        <input
+                            type="date"
+                            id="fromDate"
+                            required
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="toDate">
+                            To Date
+                        </label>
+
+                        <input
+                            type="date"
+                            id="toDate"
+                            required
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="reason">
+                        Reason
+                    </label>
+
+                    <textarea
+                        id="reason"
+                        placeholder="Enter reason for leave"
+                        required
+                    ></textarea>
+
+                </div>
+
+
+                <button type="submit">
+                    Submit Leave Request
+                </button>
+
+            </form>
+
+        </section>
+
+
+        <!-- Leave Balance -->
+
+        <section class="dashboard">
+
+            <div class="card">
+
+                <h3>Casual Leave</h3>
+
+                <p>12</p>
+
+            </div>
+
+
+            <div class="card">
+
+                <h3>Sick Leave</h3>
+
+                <p>10</p>
+
+            </div>
+
+
+            <div class="card">
+
+                <h3>Earned Leave</h3>
+
+                <p>15</p>
+
+            </div>
+
+
+            <div class="card">
+
+                <h3>Pending Requests</h3>
+
+                <p id="pendingRequests">0</p>
+
+            </div>
+
+        </section>
+
+
+        <!-- Leave Requests -->
+
+        <section class="table-section">
+
+            <h2>My Leave Requests</h2>
+
+            <div class="table-container">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Leave Type</th>
+
+                            <th>From Date</th>
+
+                            <th>To Date</th>
+
+                            <th>Days</th>
+
+                            <th>Reason</th>
+
+                            <th>Status</th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody id="leaveTableBody">
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+        <!-- Logout -->
+
+        <section class="form-section">
+
+            <button
+                onclick="logout()"
+                class="logout-btn">
+
+                Logout
+
+            </button>
+
+        </section>
+
+    </div>
+
+
+    <script>
+
+        // Store leave requests
+
+        let leaveRequests = [];
+
+
+        // Submit Leave Form
+
+        document
+            .getElementById("leaveForm")
+            .addEventListener("submit", function(event) {
+
+                event.preventDefault();
+
+
+                const employeeName =
+                    document
+                    .getElementById("employeeName")
+                    .value.trim();
+
+
+                const employeeId =
+                    document
+                    .getElementById("employeeId")
+                    .value.trim();
+
+
+                const leaveType =
+                    document
+                    .getElementById("leaveType")
+                    .value;
+
+
+                const fromDate =
+                    document
+                    .getElementById("fromDate")
+                    .value;
+
+
+                const toDate =
+                    document
+                    .getElementById("toDate")
+                    .value;
+
+
+                const reason =
+                    document
+                    .getElementById("reason")
+                    .value.trim();
+
+
+                // Check date
+
+                if (new Date(toDate) < new Date(fromDate)) {
+
+                    alert(
+                        "To Date cannot be earlier than From Date."
+                    );
+
+                    return;
+
+                }
+
+
+                // Calculate leave days
+
+                const startDate =
+                    new Date(fromDate);
+
+                const endDate =
+                    new Date(toDate);
+
+
+                const difference =
+                    endDate - startDate;
+
+
+                const days =
+                    Math.floor(
+                        difference /
+                        (1000 * 60 * 60 * 24)
+                    ) + 1;
+
+
+                // Create leave request
+
+                const request = {
+
+                    employeeName: employeeName,
+
+                    employeeId: employeeId,
+
+                    leaveType: leaveType,
+
+                    fromDate: fromDate,
+
+                    toDate: toDate,
+
+                    days: days,
+
+                    reason: reason,
+
+                    status: "Pending"
+
+                };
+
+
+                leaveRequests.push(request);
+
+
+                // Clear form
+
+                document
+                    .getElementById("leaveForm")
+                    .reset();
+
+
+                displayRequests();
+
+                updatePendingRequests();
+
+
+                alert(
+                    "Leave request submitted successfully!"
+                );
+
+            });
+
+
+        // Display Leave Requests
+
+        function displayRequests() {
+
+            const table =
+                document
+                .getElementById("leaveTableBody");
+
+
+            table.innerHTML = "";
+
+
+            leaveRequests.forEach(function(request) {
+
+                const row =
+                    document.createElement("tr");
+
+
+                row.innerHTML = `
+
+                    <td>
+                        ${request.leaveType}
+                    </td>
+
+                    <td>
+                        ${request.fromDate}
+                    </td>
+
+                    <td>
+                        ${request.toDate}
+                    </td>
+
+                    <td>
+                        ${request.days}
+                    </td>
+
+                    <td>
+                        ${request.reason}
+                    </td>
+
+                    <td>
+
+                        <span class="status
+                        ${request.status.toLowerCase()}">
+
+                            ${request.status}
+
+                        </span>
+
+                    </td>
+
+                `;
+
+
+                table.appendChild(row);
+
+            });
+
+        }
+
+
+        // Update Pending Requests
+
+        function updatePendingRequests() {
+
+            const pending =
+                leaveRequests.filter(
+                    function(request) {
+
+                        return request.status === "Pending";
+
+                    }
+                ).length;
+
+
+            document
+                .getElementById("pendingRequests")
+                .textContent = pending;
+
+        }
+
+
+        // Logout
+
+        function logout() {
+
+            const confirmLogout =
+                confirm(
+                    "Are you sure you want to logout?"
+                );
+
+
+            if (confirmLogout) {
+
+                window.location.href =
+                    "index.html";
+
+            }
+
+        }
+
+    </script>
+
+</body>
+
+</html>
